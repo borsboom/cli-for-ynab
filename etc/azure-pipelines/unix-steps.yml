@@ -1,0 +1,39 @@
+steps:
+- script: |
+    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none -y
+  displayName: Install rustup
+- script: |
+    source $HOME/.cargo/env
+    make test
+  displayName: Run tests
+- script: |
+    source $HOME/.cargo/env
+    cargo build --release
+    mkdir -p output
+    cp target/release/ynab "output/ynab-$(target/release/ynab --version|awk '{print $2}')-$(uname -m)-$(uname -s|tr A-Z a-z)"
+  condition: |
+    and(succeeded(),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        eq(variables['Agent.OS'], 'Darwin'))
+  displayName: Build release
+- script: |
+    source $HOME/.cargo/env
+    for x in target/release target/x86_64-unknown-linux-musl/release; do
+      mkdir -p $x
+      chmod a+rwx $x
+    done
+    chmod a+rwx Cargo.lock
+    docker run --rm -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder@sha256:19dc542047d37e550432654f686dcbd66b052bf45cf2dceb3e9ffb9d03fb8a36 cargo build --release
+    mkdir -p output
+    cp target/x86_64-unknown-linux-musl/release/ynab "output/ynab-$(target/x86_64-unknown-linux-musl/release/ynab --version|awk '{print $2}')-$(uname -m)-$(uname -s|tr A-Z a-z)"
+  condition: |
+    and(succeeded(),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        eq(variables['Agent.OS'], 'Linux'))
+  displayName: Build static release
+- task: PublishBuildArtifacts@1
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    pathtoPublish: output/
+    artifactName: output
+  displayName: Publish artifacts

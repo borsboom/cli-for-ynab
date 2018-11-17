@@ -1,0 +1,26 @@
+steps:
+- powershell: |
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri https://win.rustup.rs -OutFile $env:TEMP\rustup-init.exe
+  displayName: Download rust-init
+- script: "%TEMP%\\rustup-init --default-toolchain 1.30.1 -y"
+  displayName: Install rust toolchain
+- script: |
+    PATH=%USERPROFILE%\.cargo\bin;%PATH%
+    cargo test
+  displayName: Run tests
+- script: |
+    PATH=%USERPROFILE%\.cargo\bin;%PATH%
+    cargo build --release
+    md output
+    for /F "tokens=2" %%V in ('"target\release\ynab --version"') DO (
+      copy target\release\ynab.exe output\ynab-%%V-x86_64-windows.exe
+    )
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  displayName: Build release
+- task: PublishBuildArtifacts@1
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    pathtoPublish: output/
+    artifactName: output
+  displayName: Publish artifacts
