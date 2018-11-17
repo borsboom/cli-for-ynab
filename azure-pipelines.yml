@@ -1,0 +1,16 @@
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: etc/azure-pipelines/unix-steps.yml
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: etc/azure-pipelines/unix-steps.yml
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - template: etc/azure-pipelines/windows-steps.yml
