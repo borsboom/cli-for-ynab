@@ -64,8 +64,8 @@ If your platform isn't listed, see [Build from source](#build-from-source).
 
 On Linux/macOS, give the downloaded file execute permissions and put it somewhere on your $PATH with the name `ynab`.  E.g.:
 
-    $ chmod a+x /path/to/cli-for-ynab-0.1.0-x86_64-*
-    $ sudo cp /path/to/cli-for-ynab-0.1.0-x86_64-* /usr/local/bin/ynab
+    $ chmod a+x /path/to/cli-for-ynab-0.1.0-*
+    $ sudo cp /path/to/cli-for-ynab-0.1.0-* /usr/local/bin/ynab
 
 On Windows, rename `cli-for-ynab-0.1.0-x86_64-windows.exe` to `ynab.exe` and move it to the current directory or somewhere on your %PATH%.
 
@@ -87,13 +87,17 @@ Create a text file named `.ynab.env` in your home directory or the current direc
 
     YNAB_ACCESS_TOKEN=4cfb0a3a5f302f2094747e3eeb0690b9112f39f87548f792b0830001232ac1f6
 
+Test the configured credentials by running:
+
+    ynab list budgets
+
+If it lists your budgets, then the CLI is configured correctly.
+
 ### Budget ID
 
 The default budget ID (`last-used`) will use your most recently used budget, but it doesn't work reliably in many parts of the API.  As such, you should also configure the actual budget ID of your main budget.
 
-The easiest way to to get the budget ID is by logging into YNAB on your browser and opening your budget, and then copy the ID from the URL.  E.g. if the URL is `https://app.youneedabudget.com/a3a5f302-f209-4747-e3ee-b0690b9112f3/budget`, then the budget ID is `a3a5f302-f209-4747-e3ee-b0690b9112f3`.  Alternatively, use `ynab list budgets` to find the budget ID (the first column).
-
-Now add the `YNAB_BUDGET_ID=<ID>` to `.ynab.env`.  For example, a file with both values:
+Find your budget ID from the first column of the `ynab list budgets` output, and add `YNAB_BUDGET_ID=<ID>` to `.ynab.env`.  For example, a configuration file with both values:
 
     YNAB_ACCESS_TOKEN=4cfb0a3a5f302f2094747e3eeb0690b9112f39f87548f792b0830001232ac1f6
     YNAB_BUDGET_ID=a3a5f302-f209-4747-e3ee-b0690b9112f3
