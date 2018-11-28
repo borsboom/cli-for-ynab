@@ -7,7 +7,15 @@ Version: 0.1.0
 [You Need A Budget](https://www.youneedabudget.com/) (YNAB) is a personal budgeting app that will help you stop living paycheck to paycheck, get out of debt, and save more money.
 
 This CLI provides access to all functionality exposed by the [YNAB API](https://api.youneedabudget.com/v1) (as of the date of writing).
-It currently hews very close to the API, without any "porcelain" to provide user-friendly functionality built ontop of the API (such features may be added in the future; feel free to [suggest one](https://github.com/borsboom/cli-for-ynab/issues/new)).  For now, no data is cached locally.
+It currently hews very close to the API, without any "porcelain" to provide user-friendly functionality built on top of the API (such features may be added in the future; feel free to [suggest one](https://github.com/borsboom/cli-for-ynab/issues/new)).  For now, no data is cached locally.
+
+Features:
+
+  * **Multiple output options.**  Default is an easy-to-read table, but also supports CSV and JSON for machine-readable output to use in scripts.
+  * **Customizable columns.**  The default selections have the most commonly used columns, but you can have the table or CSV include all values (or fewer) if desired.
+  * **Complete.**  Every API endpoint is supported by the CLI.
+  * **Easy to install.**  Just download an executable and run it (available for Windows/macOS/Linux).  No need for Java/Ruby/Python/node.js runtime environment to be installed.
+  * **Well documented.**  The [web site](https://borsboom.io/cli-for-ynab/) describes all commands and configuration.
 
 CLI for YNAB is written by a third party, and is not sponsored, endorsed, or supported by YNAB.
 
@@ -162,7 +170,7 @@ These arguments are accepted by all subcommands, and may also appear before the 
 Creates a single transaction or multiple transactions
 
 To create multiple transactions, you must use the `--file` option.  If you provide a body containing
-a 'transaction' object, a single transaction will be created and if you provide a body containing a
+a `transaction` object, a single transaction will be created and if you provide a body containing a
 `transactions` array, multiple transactions will be created.
 
 ##### Usage
@@ -519,7 +527,7 @@ This resource makes these locations available. Locations will not be available f
     [possible values: all, id, payee-id, latitude, longitude, deleted]
 
   * **`--payee-id <UUID>`**  
-    List locations for payee ID
+    If specified, list locations for the given payee ID
 
 
 (global arguments omitted; see [Global arguments](#global-arguments)).
