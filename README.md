@@ -56,9 +56,9 @@ Download the appropriate binary for your platform:
 
 | Platform         | Download link |
 |------------------|---------------|
-| Linux (64-bit)   | [ynab-0.1.0-x86_64-linux](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/ynab-0.1.0-x86_64-linux) |
-| macOS            | [ynab-0.1.0-x86_64-darwin](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/ynab-0.1.0-x86_64-darwin) |
-| Windows (64-bit) | [ynab-0.1.0-x86_64-windows.exe](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/ynab-0.1.0-x86_64-windows.exe) |
+| Linux (64-bit)   | [ynab-0.1.0-x86_64-linux](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/cli-for-ynab-0.1.0-x86_64-linux) |
+| macOS            | [ynab-0.1.0-x86_64-darwin](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/cli-for-ynab-0.1.0-x86_64-darwin) |
+| Windows (64-bit) | [ynab-0.1.0-x86_64-windows.exe](https://github.com/borsboom/cli-for-ynab/releases/download/v0.1.0/cli-for-ynab-0.1.0-x86_64-windows.exe) |
 
 If your platform isn't listed, see [Build from source](#build-from-source).
 
