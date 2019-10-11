@@ -151,7 +151,7 @@ pub fn milliunits_str(settings: &models::BudgetSettings, mu: &models::Milliunits
         if *fmt.symbol_first() {
             format!("{}{}", fmt.currency_symbol(), s)
         } else {
-            format!("{}{}", f, fmt.currency_symbol())
+            format!("{}{}", s, fmt.currency_symbol())
         }
     } else {
         s
