@@ -84,7 +84,7 @@ fn make_months_table(
         table.add_row(Row::new(
             columns
                 .iter()
-                .map(|c| month_summary_cell(&settings, &month, c, Alignment::RIGHT))
+                .map(|c| month_summary_cell(&settings, month, c, Alignment::RIGHT))
                 .collect(),
         ));
     }
@@ -135,7 +135,7 @@ fn make_month_table(state: &YnabState, month: &models::MonthDetail) -> Result<Ta
         for col in CATEGORY_NON_GROUP_COLS.iter() {
             table.add_row(Row::new(vec![
                 vfield_cell(&col.to_string()),
-                category_cell(&settings, None, cat, &col, Alignment::LEFT),
+                category_cell(&settings, None, cat, col, Alignment::LEFT),
             ]));
         }
     }

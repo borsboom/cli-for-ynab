@@ -31,15 +31,15 @@ impl<C: hyper::client::Connect> CategoriesApiClient<C> {
 
 //@@@ A datatype that takes just a month or "current" would be good, INTEAD OF NAIVEDATE
 pub trait CategoriesApi {
-    fn get_categories(&self, budget_id: &str) -> Box<Future<Item = ::models::CategoriesResponse, Error = Error>>;
-    fn get_category_by_id(&self, budget_id: &str, category_id: &str) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>>;
-    fn get_month_category_by_id(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>>;
-    fn update_month_category(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str, month_category: ::models::SaveMonthCategoryWrapper) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>>;
+    fn get_categories(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::CategoriesResponse, Error = Error>)>;
+    fn get_category_by_id(&self, budget_id: &str, category_id: &str) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)>;
+    fn get_month_category_by_id(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)>;
+    fn update_month_category(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str, month_category: ::models::SaveMonthCategoryWrapper) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>CategoriesApi for CategoriesApiClient<C> {
-    fn get_categories(&self, budget_id: &str) -> Box<Future<Item = ::models::CategoriesResponse, Error = Error>> {
+    fn get_categories(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::CategoriesResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -66,7 +66,7 @@ impl<C: hyper::client::Connect>CategoriesApi for CategoriesApiClient<C> {
         )
     }
 
-    fn get_category_by_id(&self, budget_id: &str, category_id: &str) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>> {
+    fn get_category_by_id(&self, budget_id: &str, category_id: &str) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -93,7 +93,7 @@ impl<C: hyper::client::Connect>CategoriesApi for CategoriesApiClient<C> {
         )
     }
 
-    fn get_month_category_by_id(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>> {
+    fn get_month_category_by_id(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -121,7 +121,7 @@ impl<C: hyper::client::Connect>CategoriesApi for CategoriesApiClient<C> {
         )
     }
 
-    fn update_month_category(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str, month_category: ::models::SaveMonthCategoryWrapper) -> Box<Future<Item = ::models::CategoryResponse, Error = Error>> {
+    fn update_month_category(&self, budget_id: &str, month: &chrono::NaiveDate, category_id: &str, month_category: ::models::SaveMonthCategoryWrapper) -> Box<dyn (Future<Item = ::models::CategoryResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Patch;

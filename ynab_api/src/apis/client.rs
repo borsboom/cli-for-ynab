@@ -5,16 +5,16 @@ use super::configuration::Configuration;
 
 pub struct APIClient<C: hyper::client::Connect> {
   configuration: std::marker::PhantomData<C>,
-  accounts_api: Box<::apis::AccountsApi>,
-  budgets_api: Box<::apis::BudgetsApi>,
-  categories_api: Box<::apis::CategoriesApi>,
-  deprecated_api: Box<::apis::DeprecatedApi>,
-  months_api: Box<::apis::MonthsApi>,
-  payee_locations_api: Box<::apis::PayeeLocationsApi>,
-  payees_api: Box<::apis::PayeesApi>,
-  scheduled_transactions_api: Box<::apis::ScheduledTransactionsApi>,
-  transactions_api: Box<::apis::TransactionsApi>,
-  user_api: Box<::apis::UserApi>,
+  accounts_api: Box<dyn (::apis::AccountsApi)>,
+  budgets_api: Box<dyn (::apis::BudgetsApi)>,
+  categories_api: Box<dyn (::apis::CategoriesApi)>,
+  deprecated_api: Box<dyn (::apis::DeprecatedApi)>,
+  months_api: Box<dyn (::apis::MonthsApi)>,
+  payee_locations_api: Box<dyn (::apis::PayeeLocationsApi)>,
+  payees_api: Box<dyn (::apis::PayeesApi)>,
+  scheduled_transactions_api: Box<dyn (::apis::ScheduledTransactionsApi)>,
+  transactions_api: Box<dyn (::apis::TransactionsApi)>,
+  user_api: Box<dyn (::apis::UserApi)>,
 }
 
 impl<C: hyper::client::Connect> APIClient<C> {
@@ -36,43 +36,43 @@ impl<C: hyper::client::Connect> APIClient<C> {
     }
   }
 
-  pub fn accounts_api(&self) -> &::apis::AccountsApi{
+  pub fn accounts_api(&self) -> &dyn (::apis::AccountsApi){
     self.accounts_api.as_ref()
   }
 
-  pub fn budgets_api(&self) -> &::apis::BudgetsApi{
+  pub fn budgets_api(&self) -> &dyn (::apis::BudgetsApi){
     self.budgets_api.as_ref()
   }
 
-  pub fn categories_api(&self) -> &::apis::CategoriesApi{
+  pub fn categories_api(&self) -> &dyn (::apis::CategoriesApi){
     self.categories_api.as_ref()
   }
 
-  pub fn deprecated_api(&self) -> &::apis::DeprecatedApi{
+  pub fn deprecated_api(&self) -> &dyn (::apis::DeprecatedApi){
     self.deprecated_api.as_ref()
   }
 
-  pub fn months_api(&self) -> &::apis::MonthsApi{
+  pub fn months_api(&self) -> &dyn (::apis::MonthsApi){
     self.months_api.as_ref()
   }
 
-  pub fn payee_locations_api(&self) -> &::apis::PayeeLocationsApi{
+  pub fn payee_locations_api(&self) -> &dyn (::apis::PayeeLocationsApi){
     self.payee_locations_api.as_ref()
   }
 
-  pub fn payees_api(&self) -> &::apis::PayeesApi{
+  pub fn payees_api(&self) -> &dyn (::apis::PayeesApi){
     self.payees_api.as_ref()
   }
 
-  pub fn scheduled_transactions_api(&self) -> &::apis::ScheduledTransactionsApi{
+  pub fn scheduled_transactions_api(&self) -> &dyn (::apis::ScheduledTransactionsApi){
     self.scheduled_transactions_api.as_ref()
   }
 
-  pub fn transactions_api(&self) -> &::apis::TransactionsApi{
+  pub fn transactions_api(&self) -> &dyn (::apis::TransactionsApi){
     self.transactions_api.as_ref()
   }
 
-  pub fn user_api(&self) -> &::apis::UserApi{
+  pub fn user_api(&self) -> &dyn (::apis::UserApi){
     self.user_api.as_ref()
   }
 

@@ -29,13 +29,13 @@ impl<C: hyper::client::Connect> PayeesApiClient<C> {
 }
 
 pub trait PayeesApi {
-    fn get_payee_by_id(&self, budget_id: &str, payee_id: &str) -> Box<Future<Item = ::models::PayeeResponse, Error = Error>>;
-    fn get_payees(&self, budget_id: &str) -> Box<Future<Item = ::models::PayeesResponse, Error = Error>>;
+    fn get_payee_by_id(&self, budget_id: &str, payee_id: &str) -> Box<dyn (Future<Item = ::models::PayeeResponse, Error = Error>)>;
+    fn get_payees(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::PayeesResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>PayeesApi for PayeesApiClient<C> {
-    fn get_payee_by_id(&self, budget_id: &str, payee_id: &str) -> Box<Future<Item = ::models::PayeeResponse, Error = Error>> {
+    fn get_payee_by_id(&self, budget_id: &str, payee_id: &str) -> Box<dyn (Future<Item = ::models::PayeeResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -62,7 +62,7 @@ impl<C: hyper::client::Connect>PayeesApi for PayeesApiClient<C> {
         )
     }
 
-    fn get_payees(&self, budget_id: &str) -> Box<Future<Item = ::models::PayeesResponse, Error = Error>> {
+    fn get_payees(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::PayeesResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

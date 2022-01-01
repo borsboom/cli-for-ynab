@@ -22,20 +22,21 @@ where
     // expect() below is safe since CLI parser has validated the column name already
     let vals: Vec<_> = matches
         .values_of(TABLE_COLUMNS_ARG)
-        .expect(&format!(
-            "Expected {} value to be non-empty",
-            TABLE_COLUMNS_ARG
-        )).collect();
-    if let Some(_) = vals.iter().position(|v| *v == ALL_VAL) {
+        .unwrap_or_else(|| panic!("Expected {} value to be non-empty", TABLE_COLUMNS_ARG))
+        .collect();
+    if vals.iter().any(|v| *v == ALL_VAL) {
         C::iter().collect()
     } else {
         vals.iter()
             .map(|c| {
-                C::from_str(c).expect(&format!(
-                    "Expected {} column value to be valid: {}",
-                    TABLE_COLUMNS_ARG, c
-                ))
-            }).collect()
+                C::from_str(c).unwrap_or_else(|_| {
+                    panic!(
+                        "Expected {} column value to be valid: {}",
+                        TABLE_COLUMNS_ARG, c
+                    )
+                })
+            })
+            .collect()
     }
 }
 
@@ -52,7 +53,7 @@ pub fn htable_output<C, D, I, W>(
     state: &YnabState,
     wrapper: &W,
     data: &D,
-    make_table: &Fn(&YnabState, &Vec<C>, &D) -> Result<Table, AnyError>,
+    make_table: &dyn Fn(&YnabState, &Vec<C>, &D) -> Result<Table, AnyError>,
 ) -> Result<(), AnyError>
 where
     C: FromStr,
@@ -82,7 +83,7 @@ pub fn vtable_output<D, W>(
     state: &YnabState,
     wrapper: &W,
     data: &D,
-    make_table: &Fn(&YnabState, &D) -> Result<Table, AnyError>,
+    make_table: &dyn Fn(&YnabState, &D) -> Result<Table, AnyError>,
 ) -> Result<(), AnyError>
 where
     W: serde::ser::Serialize,
@@ -103,12 +104,12 @@ where
 
 pub fn opt_date_time_str(dt: Option<&DateTime<Local>>) -> String {
     dt.map(|dt| dt.format("%c").to_string())
-        .unwrap_or("".to_string())
+        .unwrap_or_else(|| "".to_string())
 }
 
 pub fn opt_month_str(d: Option<&NaiveDate>) -> String {
     d.map(|d| d.format(MONTH_FORMAT).to_string())
-        .unwrap_or("".to_string())
+        .unwrap_or_else(|| "".to_string())
 }
 
 pub fn month_str(d: &NaiveDate) -> String {
@@ -116,11 +117,11 @@ pub fn month_str(d: &NaiveDate) -> String {
 }
 
 pub fn opt_str(v: Option<String>) -> String {
-    v.unwrap_or("".to_string())
+    v.unwrap_or_else(|| "".to_string())
 }
 
 pub fn opt_ref_str(v: Option<&String>) -> String {
-    v.map(|v| v.to_owned()).unwrap_or("".to_string())
+    v.map(|v| v.to_owned()).unwrap_or_else(|| "".to_string())
 }
 
 pub fn opt_to_str<T>(v: Option<T>) -> String
@@ -136,7 +137,7 @@ pub fn opt_milliunits_str(
 ) -> String {
     opt_mu
         .map(|mu| milliunits_str(settings, mu))
-        .unwrap_or("".to_string())
+        .unwrap_or_else(|| "".to_string())
 }
 
 pub fn milliunits_str(settings: &models::BudgetSettings, mu: &models::Milliunits) -> String {
@@ -187,7 +188,11 @@ pub fn header_cell(name: &str, alignment: Alignment) -> Cell {
     Cell::new_align(&name.replace("-", " ").to_uppercase(), alignment)
 }
 
-pub fn make_htable<C>(state: &YnabState, columns: &Vec<C>, alignment: &Fn(&C) -> Alignment) -> Table
+pub fn make_htable<C>(
+    state: &YnabState,
+    columns: &Vec<C>,
+    alignment: &dyn Fn(&C) -> Alignment,
+) -> Table
 where
     C: ToString,
 {

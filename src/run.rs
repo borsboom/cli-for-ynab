@@ -23,13 +23,12 @@ pub fn run(
         (COMPLETIONS_CMD, Some(matches)) => {
             let shell = matches
                 .value_of(SHELL_ARG)
-                .expect(&format!("Expected {} argument to exist", SHELL_ARG));
+                .unwrap_or_else(|| panic!("Expected {} argument to exist", SHELL_ARG));
             build_clap_app().gen_completions_to(
                 prog_name,
-                clap::Shell::from_str(shell).expect(&format!(
-                    "Expected {} argument to be valid: {}",
-                    SHELL_ARG, shell
-                )),
+                clap::Shell::from_str(shell).unwrap_or_else(|_| {
+                    panic!("Expected {} argument to be valid: {}", SHELL_ARG, shell)
+                }),
                 &mut io::stdout(),
             );
         }

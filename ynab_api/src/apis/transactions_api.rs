@@ -30,18 +30,18 @@ impl<C: hyper::client::Connect> TransactionsApiClient<C> {
 }
 
 pub trait TransactionsApi {
-    fn create_transaction(&self, budget_id: &str, save_transactions: ::models::SaveTransactionsWrapper) -> Box<Future<Item = ::models::SaveTransactionsResponse, Error = Error>>;
-    fn get_transaction_by_id(&self, budget_id: &str, transaction_id: &str) -> Box<Future<Item = ::models::TransactionResponse, Error = Error>>;
-    fn get_transactions(&self, budget_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::TransactionsResponse, Error = Error>>;
-    fn get_transactions_by_account(&self, budget_id: &str, account_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::TransactionsResponse, Error = Error>>;
-    fn get_transactions_by_category(&self, budget_id: &str, category_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::HybridTransactionsResponse, Error = Error>>;
-    fn get_transactions_by_payee(&self, budget_id: &str, payee_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::HybridTransactionsResponse, Error = Error>>;
-    fn update_transaction(&self, budget_id: &str, transaction_id: &str, transaction: ::models::SaveTransactionWrapper) -> Box<Future<Item = ::models::TransactionResponse, Error = Error>>;
+    fn create_transaction(&self, budget_id: &str, save_transactions: ::models::SaveTransactionsWrapper) -> Box<dyn (Future<Item = ::models::SaveTransactionsResponse, Error = Error>)>;
+    fn get_transaction_by_id(&self, budget_id: &str, transaction_id: &str) -> Box<dyn (Future<Item = ::models::TransactionResponse, Error = Error>)>;
+    fn get_transactions(&self, budget_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::TransactionsResponse, Error = Error>)>;
+    fn get_transactions_by_account(&self, budget_id: &str, account_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::TransactionsResponse, Error = Error>)>;
+    fn get_transactions_by_category(&self, budget_id: &str, category_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::HybridTransactionsResponse, Error = Error>)>;
+    fn get_transactions_by_payee(&self, budget_id: &str, payee_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::HybridTransactionsResponse, Error = Error>)>;
+    fn update_transaction(&self, budget_id: &str, transaction_id: &str, transaction: ::models::SaveTransactionWrapper) -> Box<dyn (Future<Item = ::models::TransactionResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
-    fn create_transaction(&self, budget_id: &str, save_transactions: ::models::SaveTransactionsWrapper) -> Box<Future<Item = ::models::SaveTransactionsResponse, Error = Error>> {
+    fn create_transaction(&self, budget_id: &str, save_transactions: ::models::SaveTransactionsWrapper) -> Box<dyn (Future<Item = ::models::SaveTransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Post;
@@ -72,7 +72,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn get_transaction_by_id(&self, budget_id: &str, transaction_id: &str) -> Box<Future<Item = ::models::TransactionResponse, Error = Error>> {
+    fn get_transaction_by_id(&self, budget_id: &str, transaction_id: &str) -> Box<dyn (Future<Item = ::models::TransactionResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -99,7 +99,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn get_transactions(&self, budget_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::TransactionsResponse, Error = Error>> {
+    fn get_transactions(&self, budget_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::TransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -137,7 +137,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn get_transactions_by_account(&self, budget_id: &str, account_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::TransactionsResponse, Error = Error>> {
+    fn get_transactions_by_account(&self, budget_id: &str, account_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::TransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -175,7 +175,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn get_transactions_by_category(&self, budget_id: &str, category_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::HybridTransactionsResponse, Error = Error>> {
+    fn get_transactions_by_category(&self, budget_id: &str, category_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::HybridTransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -213,7 +213,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn get_transactions_by_payee(&self, budget_id: &str, payee_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::HybridTransactionsResponse, Error = Error>> {
+    fn get_transactions_by_payee(&self, budget_id: &str, payee_id: &str, since_date: Option<chrono::NaiveDate>, _type: Option<::models::TransactionType>, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::HybridTransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -251,7 +251,7 @@ impl<C: hyper::client::Connect>TransactionsApi for TransactionsApiClient<C> {
         )
     }
 
-    fn update_transaction(&self, budget_id: &str, transaction_id: &str, transaction: ::models::SaveTransactionWrapper) -> Box<Future<Item = ::models::TransactionResponse, Error = Error>> {
+    fn update_transaction(&self, budget_id: &str, transaction_id: &str, transaction: ::models::SaveTransactionWrapper) -> Box<dyn (Future<Item = ::models::TransactionResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Put;

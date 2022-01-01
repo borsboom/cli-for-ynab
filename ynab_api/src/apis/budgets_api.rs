@@ -29,14 +29,14 @@ impl<C: hyper::client::Connect> BudgetsApiClient<C> {
 }
 
 pub trait BudgetsApi {
-    fn get_budget_by_id(&self, budget_id: &str, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::BudgetDetailResponse, Error = Error>>;
-    fn get_budget_settings_by_id(&self, budget_id: &str) -> Box<Future<Item = ::models::BudgetSettingsResponse, Error = Error>>;
-    fn get_budgets(&self, ) -> Box<Future<Item = ::models::BudgetSummaryResponse, Error = Error>>;
+    fn get_budget_by_id(&self, budget_id: &str, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::BudgetDetailResponse, Error = Error>)>;
+    fn get_budget_settings_by_id(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::BudgetSettingsResponse, Error = Error>)>;
+    fn get_budgets(&self, ) -> Box<dyn (Future<Item = ::models::BudgetSummaryResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>BudgetsApi for BudgetsApiClient<C> {
-    fn get_budget_by_id(&self, budget_id: &str, last_knowledge_of_server: Option<i64>) -> Box<Future<Item = ::models::BudgetDetailResponse, Error = Error>> {
+    fn get_budget_by_id(&self, budget_id: &str, last_knowledge_of_server: Option<i64>) -> Box<dyn (Future<Item = ::models::BudgetDetailResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -70,7 +70,7 @@ impl<C: hyper::client::Connect>BudgetsApi for BudgetsApiClient<C> {
         )
     }
 
-    fn get_budget_settings_by_id(&self, budget_id: &str) -> Box<Future<Item = ::models::BudgetSettingsResponse, Error = Error>> {
+    fn get_budget_settings_by_id(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::BudgetSettingsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -97,7 +97,7 @@ impl<C: hyper::client::Connect>BudgetsApi for BudgetsApiClient<C> {
         )
     }
 
-    fn get_budgets(&self, ) -> Box<Future<Item = ::models::BudgetSummaryResponse, Error = Error>> {
+    fn get_budgets(&self, ) -> Box<dyn (Future<Item = ::models::BudgetSummaryResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

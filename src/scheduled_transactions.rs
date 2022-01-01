@@ -15,7 +15,7 @@ pub fn get_scheduled_transaction(state: &YnabState) -> Result<(), AnyError> {
         req_parse_value_of(state.matches, INCLUDE_SUBTRANSACTIONS_ARG);
     let response = state.run(&|c| {
         c.scheduled_transactions_api()
-            .get_scheduled_transaction_by_id(&state.global.budget_id, &id)
+            .get_scheduled_transaction_by_id(&state.global.budget_id, id)
     })?;
     let mut wrapper = (*response.data()).clone();
     let mut tr: models::ScheduledTransactionDetail = (*wrapper.scheduled_transaction()).clone();
@@ -59,11 +59,11 @@ fn scheduled_transaction_cell(
 ) -> Cell {
     match col {
         ScheduledTransactionCol::Id => Cell::new(tr.id()),
-        ScheduledTransactionCol::DateFirst => Cell::new(&date_str(&settings, tr.date_first())),
-        ScheduledTransactionCol::DateNext => Cell::new(&date_str(&settings, tr.date_next())),
+        ScheduledTransactionCol::DateFirst => Cell::new(&date_str(settings, tr.date_first())),
+        ScheduledTransactionCol::DateNext => Cell::new(&date_str(settings, tr.date_next())),
         ScheduledTransactionCol::Frequency => Cell::new(tr.frequency()),
         ScheduledTransactionCol::Amount => {
-            Cell::new_align(&milliunits_str(&settings, tr.amount()), currency_alignment)
+            Cell::new_align(&milliunits_str(settings, tr.amount()), currency_alignment)
         }
         ScheduledTransactionCol::Memo => Cell::new(&opt_ref_str(tr.memo())),
         ScheduledTransactionCol::FlagColor => Cell::new(&opt_to_str(tr.flag_color())),
@@ -97,7 +97,7 @@ fn scheduled_subtransaction_cell(
         ScheduledTransactionCol::DateNext => Cell::new(""),
         ScheduledTransactionCol::Frequency => Cell::new(""),
         ScheduledTransactionCol::Amount => {
-            Cell::new_align(&milliunits_str(&settings, sub.amount()), currency_alignment)
+            Cell::new_align(&milliunits_str(settings, sub.amount()), currency_alignment)
         }
         ScheduledTransactionCol::Memo => Cell::new(&opt_ref_str(sub.memo())),
         ScheduledTransactionCol::FlagColor => Cell::new(""),
@@ -143,7 +143,8 @@ fn make_scheduled_transactions_table(
                     .iter()
                     .map(|col| {
                         scheduled_subtransaction_cell(&settings, tr, sub, col, Alignment::RIGHT)
-                    }).collect(),
+                    })
+                    .collect(),
             ));
         }
     }
@@ -168,7 +169,7 @@ fn make_scheduled_transaction_table(
         for col in SCHEDULED_SUBTRANSACTION_COLS.iter() {
             table.add_row(Row::new(vec![
                 vfield_cell(&col.to_string()),
-                scheduled_subtransaction_cell(&settings, tr, sub, &col, Alignment::LEFT),
+                scheduled_subtransaction_cell(&settings, tr, sub, col, Alignment::LEFT),
             ]));
         }
     }
