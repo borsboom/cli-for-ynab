@@ -1,7 +1,7 @@
 use std::error;
 use std::fmt;
 
-use constants::*;
+use crate::constants::*;
 
 #[derive(Debug)]
 pub enum Error {
@@ -27,13 +27,13 @@ impl error::Error for Error {
         "YNAB CLI error"
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         None
     }
 }
 
 //@@@ WE SHOULD PROBABLY NOT USE THIS, INSTEAD MOVE ALL ERRORS INTO 'enum Error'
-pub type AnyError = Box<error::Error>;
+pub type AnyError = Box<dyn error::Error>;
 
 #[derive(EnumString, Display, EnumIter, Debug)]
 pub enum OutputFormat {

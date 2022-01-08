@@ -3,11 +3,11 @@ use prettytable::{Cell, Row, Table};
 use strum::IntoEnumIterator;
 use ynab_api::models;
 
-use args::*;
-use constants::*;
-use output::*;
-use types::*;
-use ynab_state::*;
+use crate::args::*;
+use crate::constants::*;
+use crate::output::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 pub fn list_payees(state: &YnabState) -> Result<(), AnyError> {
     let response = state.run(&|c| c.payees_api().get_payees(&state.global.budget_id))?;
@@ -24,7 +24,7 @@ pub fn list_payee_locations(state: &YnabState) -> Result<(), AnyError> {
     let response = state.run(&|c| {
         if let Some(payee_id) = opt_payee_id {
             c.payee_locations_api()
-                .get_payee_locations_by_payee(&state.global.budget_id, &payee_id)
+                .get_payee_locations_by_payee(&state.global.budget_id, payee_id)
         } else {
             c.payee_locations_api()
                 .get_payee_locations(&state.global.budget_id)
@@ -40,7 +40,7 @@ pub fn list_payee_locations(state: &YnabState) -> Result<(), AnyError> {
 
 pub fn get_payee(state: &YnabState) -> Result<(), AnyError> {
     let id = req_value_of(state.matches, ID_ARG);
-    let response = state.run(&|c| c.payees_api().get_payee_by_id(&state.global.budget_id, &id))?;
+    let response = state.run(&|c| c.payees_api().get_payee_by_id(&state.global.budget_id, id))?;
     vtable_output(
         state,
         response.data(),
@@ -53,7 +53,7 @@ pub fn get_payee_location(state: &YnabState) -> Result<(), AnyError> {
     let id = req_value_of(state.matches, ID_ARG);
     let response = state.run(&|c| {
         c.payee_locations_api()
-            .get_payee_location_by_id(&state.global.budget_id, &id)
+            .get_payee_location_by_id(&state.global.budget_id, id)
     })?;
     vtable_output(
         state,
@@ -81,7 +81,7 @@ fn make_payees_table(
     let mut table = make_htable(state, columns, alignment);
     for pay in payees {
         table.add_row(Row::new(
-            columns.iter().map(|c| payee_cell(&pay, c)).collect(),
+            columns.iter().map(|c| payee_cell(pay, c)).collect(),
         ));
     }
     Ok(table)
@@ -120,7 +120,7 @@ fn make_payee_locations_table(
         table.add_row(Row::new(
             columns
                 .iter()
-                .map(|c| payee_location_cell(&pay, c))
+                .map(|c| payee_location_cell(pay, c))
                 .collect(),
         ));
     }

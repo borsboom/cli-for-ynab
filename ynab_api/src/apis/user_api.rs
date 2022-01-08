@@ -29,12 +29,12 @@ impl<C: hyper::client::Connect> UserApiClient<C> {
 }
 
 pub trait UserApi {
-    fn get_user(&self, ) -> Box<Future<Item = ::models::UserResponse, Error = Error>>;
+    fn get_user(&self, ) -> Box<dyn (Future<Item = ::models::UserResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>UserApi for UserApiClient<C> {
-    fn get_user(&self, ) -> Box<Future<Item = ::models::UserResponse, Error = Error>> {
+    fn get_user(&self, ) -> Box<dyn (Future<Item = ::models::UserResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

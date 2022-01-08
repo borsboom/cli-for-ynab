@@ -33,12 +33,3 @@ mod ynab_state;
 
 pub use args::build_clap_app;
 pub use run::run;
-
-#[cfg(test)]
-mod tests {
-    // @@@ ADD TESTS
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}

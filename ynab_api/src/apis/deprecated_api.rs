@@ -30,12 +30,12 @@ impl<C: hyper::client::Connect> DeprecatedApiClient<C> {
 }
 
 pub trait DeprecatedApi {
-    fn bulk_create_transactions(&self, budget_id: &str, transactions: ::models::BulkTransactions) -> Box<Future<Item = ::models::BulkResponse, Error = Error>>;
+    fn bulk_create_transactions(&self, budget_id: &str, transactions: ::models::BulkTransactions) -> Box<dyn (Future<Item = ::models::BulkResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>DeprecatedApi for DeprecatedApiClient<C> {
-    fn bulk_create_transactions(&self, budget_id: &str, transactions: ::models::BulkTransactions) -> Box<Future<Item = ::models::BulkResponse, Error = Error>> {
+    fn bulk_create_transactions(&self, budget_id: &str, transactions: ::models::BulkTransactions) -> Box<dyn (Future<Item = ::models::BulkResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Post;

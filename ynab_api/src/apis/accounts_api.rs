@@ -29,13 +29,13 @@ impl<C: hyper::client::Connect> AccountsApiClient<C> {
 }
 
 pub trait AccountsApi {
-    fn get_account_by_id(&self, budget_id: &str, account_id: &str) -> Box<Future<Item = ::models::AccountResponse, Error = Error>>;
-    fn get_accounts(&self, budget_id: &str) -> Box<Future<Item = ::models::AccountsResponse, Error = Error>>;
+    fn get_account_by_id(&self, budget_id: &str, account_id: &str) -> Box<dyn (Future<Item = ::models::AccountResponse, Error = Error>)>;
+    fn get_accounts(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::AccountsResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>AccountsApi for AccountsApiClient<C> {
-    fn get_account_by_id(&self, budget_id: &str, account_id: &str) -> Box<Future<Item = ::models::AccountResponse, Error = Error>> {
+    fn get_account_by_id(&self, budget_id: &str, account_id: &str) -> Box<dyn (Future<Item = ::models::AccountResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -62,7 +62,7 @@ impl<C: hyper::client::Connect>AccountsApi for AccountsApiClient<C> {
         )
     }
 
-    fn get_accounts(&self, budget_id: &str) -> Box<Future<Item = ::models::AccountsResponse, Error = Error>> {
+    fn get_accounts(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::AccountsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

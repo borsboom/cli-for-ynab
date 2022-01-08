@@ -2,8 +2,8 @@ use std::cell::RefCell;
 use ynab_api::apis;
 use ynab_api::models;
 
-use args::*;
-use types::*;
+use crate::args::*;
+use crate::types::*;
 
 type YnabClient =
     apis::client::APIClient<::hyper_tls::HttpsConnector<hyper::client::HttpConnector>>;
@@ -55,11 +55,11 @@ impl<'a> YnabState<'a> {
 
     pub fn run<T>(
         &self,
-        get_work: &Fn(&YnabClient) -> Box<futures::Future<Item = T, Error = apis::Error>>,
+        get_work: &dyn Fn(&YnabClient) -> Box<dyn futures::Future<Item = T, Error = apis::Error>>,
     ) -> Result<T, apis::Error> {
         let work = {
             let client = &self.core_and_client.borrow().client;
-            get_work(&client)
+            get_work(client)
         };
         self.core_and_client.borrow_mut().core.run(work)
     }
@@ -68,7 +68,7 @@ impl<'a> YnabState<'a> {
         // @@@ IMPLEMENT LOCAL CACHING OF SETTINGS
         // @@@ DOC: ensures settings only retrieved once
         let mut settings_opt = self.budget_settings.borrow_mut();
-        if let None = *settings_opt {
+        if settings_opt.is_none() {
             let response = self.run(&|c| {
                 c.budgets_api()
                     .get_budget_settings_by_id(&self.global.budget_id)

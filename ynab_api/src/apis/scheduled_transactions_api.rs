@@ -29,13 +29,13 @@ impl<C: hyper::client::Connect> ScheduledTransactionsApiClient<C> {
 }
 
 pub trait ScheduledTransactionsApi {
-    fn get_scheduled_transaction_by_id(&self, budget_id: &str, scheduled_transaction_id: &str) -> Box<Future<Item = ::models::ScheduledTransactionResponse, Error = Error>>;
-    fn get_scheduled_transactions(&self, budget_id: &str) -> Box<Future<Item = ::models::ScheduledTransactionsResponse, Error = Error>>;
+    fn get_scheduled_transaction_by_id(&self, budget_id: &str, scheduled_transaction_id: &str) -> Box<dyn (Future<Item = ::models::ScheduledTransactionResponse, Error = Error>)>;
+    fn get_scheduled_transactions(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::ScheduledTransactionsResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>ScheduledTransactionsApi for ScheduledTransactionsApiClient<C> {
-    fn get_scheduled_transaction_by_id(&self, budget_id: &str, scheduled_transaction_id: &str) -> Box<Future<Item = ::models::ScheduledTransactionResponse, Error = Error>> {
+    fn get_scheduled_transaction_by_id(&self, budget_id: &str, scheduled_transaction_id: &str) -> Box<dyn (Future<Item = ::models::ScheduledTransactionResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -62,7 +62,7 @@ impl<C: hyper::client::Connect>ScheduledTransactionsApi for ScheduledTransaction
         )
     }
 
-    fn get_scheduled_transactions(&self, budget_id: &str) -> Box<Future<Item = ::models::ScheduledTransactionsResponse, Error = Error>> {
+    fn get_scheduled_transactions(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::ScheduledTransactionsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

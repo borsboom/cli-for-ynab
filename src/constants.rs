@@ -1,7 +1,8 @@
 use prettytable::format::{FormatBuilder, TableFormat};
 use strum::IntoEnumIterator;
-use types::*;
 use ynab_api::models;
+
+use crate::types::*;
 
 pub const GET_CMD: &str = "get";
 pub const COMPLETIONS_CMD: &str = "completions";

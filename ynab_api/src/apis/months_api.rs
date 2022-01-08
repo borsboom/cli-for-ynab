@@ -30,13 +30,13 @@ impl<C: hyper::client::Connect> MonthsApiClient<C> {
 
 pub trait MonthsApi {
     // @@@ USE A REAL MONTH TYPE THAT ALSO HAS A 'current' ENUM VALUE
-    fn get_budget_month(&self, budget_id: &str, month: &chrono::NaiveDate) -> Box<Future<Item = ::models::MonthDetailResponse, Error = Error>>;
-    fn get_budget_months(&self, budget_id: &str) -> Box<Future<Item = ::models::MonthSummariesResponse, Error = Error>>;
+    fn get_budget_month(&self, budget_id: &str, month: &chrono::NaiveDate) -> Box<dyn (Future<Item = ::models::MonthDetailResponse, Error = Error>)>;
+    fn get_budget_months(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::MonthSummariesResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>MonthsApi for MonthsApiClient<C> {
-    fn get_budget_month(&self, budget_id: &str, month: &chrono::NaiveDate) -> Box<Future<Item = ::models::MonthDetailResponse, Error = Error>> {
+    fn get_budget_month(&self, budget_id: &str, month: &chrono::NaiveDate) -> Box<dyn (Future<Item = ::models::MonthDetailResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -63,7 +63,7 @@ impl<C: hyper::client::Connect>MonthsApi for MonthsApiClient<C> {
         )
     }
 
-    fn get_budget_months(&self, budget_id: &str) -> Box<Future<Item = ::models::MonthSummariesResponse, Error = Error>> {
+    fn get_budget_months(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::MonthSummariesResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

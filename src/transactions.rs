@@ -4,11 +4,11 @@ use prettytable::{Cell, Row, Table};
 use strum::IntoEnumIterator;
 use ynab_api::models;
 
-use args::*;
-use constants::*;
-use output::*;
-use types::*;
-use ynab_state::*;
+use crate::args::*;
+use crate::constants::*;
+use crate::output::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 pub fn get_transaction(state: &YnabState) -> Result<(), AnyError> {
     let id = req_value_of(state.matches, ID_ARG);
@@ -16,7 +16,7 @@ pub fn get_transaction(state: &YnabState) -> Result<(), AnyError> {
         req_parse_value_of(state.matches, INCLUDE_SUBTRANSACTIONS_ARG);
     let response = state.run(&|c| {
         c.transactions_api()
-            .get_transaction_by_id(&state.global.budget_id, &id)
+            .get_transaction_by_id(&state.global.budget_id, id)
     })?;
     let mut wrapper = (*response.data()).clone();
     let mut tr: models::TransactionDetail = (*wrapper.transaction()).clone();
@@ -36,15 +36,21 @@ fn make_save_transaction(
         state
             .matches
             .value_of(SET_ACCOUNT_ID_ARG)
-            .unwrap_or(old.account_id())
+            .unwrap_or_else(|| old.account_id())
             .to_string(),
         opt_date_value_of(&settings, state.matches, SET_DATE_ARG)?.unwrap_or(*old.date()),
         opt_milliunits_value_of(&settings, state.matches, SET_AMOUNT_ARG)?.unwrap_or(*old.amount()),
     );
     //@@@ RENAME/MOVE
-    fn xxx<T>(newv: &Option<&str>, oldv: Option<&String>, new: &mut T, setter: &Fn(&mut T, &str)) {
-        newv.map_or(oldv.map(|v| &v[..]), |v| Some(v))
-            .map(|v| setter(new, v));
+    fn xxx<T>(
+        newv: &Option<&str>,
+        oldv: Option<&String>,
+        new: &mut T,
+        setter: &dyn Fn(&mut T, &str),
+    ) {
+        if let Some(v) = newv.map_or(oldv.map(|v| &v[..]), Some) {
+            setter(new, v)
+        };
     }
     if let new_payee_name @ Some(_) = state.matches.value_of(SET_PAYEE_NAME_ARG) {
         xxx(&new_payee_name, old.payee_name(), &mut new, &|new, v| {
@@ -77,7 +83,7 @@ fn make_save_transaction(
         opt_parse_value_of(state.matches, SET_APPROVED_ARG).unwrap_or(*old.approved()),
     );
     match opt_flag_color_value_of(state.matches, SET_FLAG_COLOR_ARG)
-        .unwrap_or(old.flag_color().cloned())
+        .unwrap_or_else(|| old.flag_color().cloned())
     {
         None => {
             new.reset_flag_color();
@@ -104,8 +110,9 @@ pub fn update_transaction(state: &YnabState) -> Result<(), AnyError> {
         let old = state
             .run(&|c| {
                 c.transactions_api()
-                    .get_transaction_by_id(&state.global.budget_id, &id)
-            })?.data()
+                    .get_transaction_by_id(&state.global.budget_id, id)
+            })?
+            .data()
             .transaction()
             .clone();
         let new = make_save_transaction(state, old)?;
@@ -114,7 +121,7 @@ pub fn update_transaction(state: &YnabState) -> Result<(), AnyError> {
     let response: models::TransactionResponse = state.run(&|c| {
         c.transactions_api().update_transaction(
             &state.global.budget_id,
-            &id,
+            id,
             model.clone(), // @@@ NOT SURE WHY WE NEED TO CLONE HERE
         )
     })?;
@@ -270,9 +277,9 @@ fn transaction_detail_cell(
 ) -> Cell {
     match col {
         TransactionCol::Id => Cell::new(tr.id()),
-        TransactionCol::Date => Cell::new(&date_str(&settings, tr.date())),
+        TransactionCol::Date => Cell::new(&date_str(settings, tr.date())),
         TransactionCol::Amount => {
-            Cell::new_align(&milliunits_str(&settings, tr.amount()), currency_alignment)
+            Cell::new_align(&milliunits_str(settings, tr.amount()), currency_alignment)
         }
         TransactionCol::Memo => Cell::new(&opt_ref_str(tr.memo())),
         TransactionCol::Cleared => Cell::new(&tr.cleared().to_string()),
@@ -306,7 +313,7 @@ fn subtransaction_cell(
         TransactionCol::Id => Cell::new(sub.id()),
         TransactionCol::Date => Cell::new(""),
         TransactionCol::Amount => {
-            Cell::new_align(&milliunits_str(&settings, sub.amount()), currency_alignment)
+            Cell::new_align(&milliunits_str(settings, sub.amount()), currency_alignment)
         }
         TransactionCol::Memo => Cell::new(&opt_ref_str(sub.memo())),
         TransactionCol::Cleared => Cell::new(""),
@@ -338,9 +345,9 @@ fn hybrid_transaction_cell(
 ) -> Cell {
     match col {
         TransactionCol::Id => Cell::new(tr.id()),
-        TransactionCol::Date => Cell::new(&date_str(&settings, tr.date())),
+        TransactionCol::Date => Cell::new(&date_str(settings, tr.date())),
         TransactionCol::Amount => {
-            Cell::new_align(&milliunits_str(&settings, tr.amount()), currency_alignment)
+            Cell::new_align(&milliunits_str(settings, tr.amount()), currency_alignment)
         }
         TransactionCol::Memo => Cell::new(&opt_ref_str(tr.memo())),
         TransactionCol::Cleared => Cell::new(&tr.cleared().to_string()),
@@ -433,7 +440,7 @@ fn make_transaction_table(
         for col in SUBTRANSACTION_COLS.iter() {
             table.add_row(Row::new(vec![
                 vfield_cell(&col.to_string()),
-                subtransaction_cell(&settings, tr, sub, &col, Alignment::LEFT),
+                subtransaction_cell(&settings, tr, sub, col, Alignment::LEFT),
             ]));
         }
     }

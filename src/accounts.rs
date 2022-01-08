@@ -3,11 +3,11 @@ use prettytable::{Cell, Row, Table};
 use strum::IntoEnumIterator;
 use ynab_api::models;
 
-use args::*;
-use constants::*;
-use output::*;
-use types::*;
-use ynab_state::*;
+use crate::args::*;
+use crate::constants::*;
+use crate::output::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 pub fn list_accounts(state: &YnabState) -> Result<(), AnyError> {
     //@@@ TODO: allow filtering by type and on-budget
@@ -33,7 +33,7 @@ pub fn get_account(state: &YnabState) -> Result<(), AnyError> {
     let id = req_value_of(state.matches, ID_ARG);
     let response = state.run(&|c| {
         c.accounts_api()
-            .get_account_by_id(&state.global.budget_id, &id)
+            .get_account_by_id(&state.global.budget_id, id)
     })?;
     vtable_output(
         state,
@@ -56,16 +56,15 @@ fn account_cell(
         AccountCol::OnBudget => Cell::new(&acc.on_budget().to_string()),
         AccountCol::Closed => Cell::new(&acc.closed().to_string()),
         AccountCol::Note => Cell::new(&opt_ref_str(acc.note())),
-        AccountCol::Balance => Cell::new_align(
-            &milliunits_str(&settings, acc.balance()),
-            currency_alignment,
-        ),
+        AccountCol::Balance => {
+            Cell::new_align(&milliunits_str(settings, acc.balance()), currency_alignment)
+        }
         AccountCol::ClearedBalance => Cell::new_align(
-            &milliunits_str(&settings, acc.cleared_balance()),
+            &milliunits_str(settings, acc.cleared_balance()),
             currency_alignment,
         ),
         AccountCol::UnclearedBalance => Cell::new_align(
-            &milliunits_str(&settings, acc.uncleared_balance()),
+            &milliunits_str(settings, acc.uncleared_balance()),
             currency_alignment,
         ),
         AccountCol::TransferPayeeId => Cell::new(acc.transfer_payee_id()),
@@ -90,7 +89,7 @@ fn make_accounts_table(
         table.add_row(Row::new(
             columns
                 .iter()
-                .map(|c| account_cell(&settings, &acc, c, Alignment::RIGHT))
+                .map(|c| account_cell(&settings, acc, c, Alignment::RIGHT))
                 .collect(),
         ));
     }

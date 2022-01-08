@@ -29,14 +29,14 @@ impl<C: hyper::client::Connect> PayeeLocationsApiClient<C> {
 }
 
 pub trait PayeeLocationsApi {
-    fn get_payee_location_by_id(&self, budget_id: &str, payee_location_id: &str) -> Box<Future<Item = ::models::PayeeLocationResponse, Error = Error>>;
-    fn get_payee_locations(&self, budget_id: &str) -> Box<Future<Item = ::models::PayeeLocationsResponse, Error = Error>>;
-    fn get_payee_locations_by_payee(&self, budget_id: &str, payee_id: &str) -> Box<Future<Item = ::models::PayeeLocationsResponse, Error = Error>>;
+    fn get_payee_location_by_id(&self, budget_id: &str, payee_location_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationResponse, Error = Error>)>;
+    fn get_payee_locations(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationsResponse, Error = Error>)>;
+    fn get_payee_locations_by_payee(&self, budget_id: &str, payee_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationsResponse, Error = Error>)>;
 }
 
 
 impl<C: hyper::client::Connect>PayeeLocationsApi for PayeeLocationsApiClient<C> {
-    fn get_payee_location_by_id(&self, budget_id: &str, payee_location_id: &str) -> Box<Future<Item = ::models::PayeeLocationResponse, Error = Error>> {
+    fn get_payee_location_by_id(&self, budget_id: &str, payee_location_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -63,7 +63,7 @@ impl<C: hyper::client::Connect>PayeeLocationsApi for PayeeLocationsApiClient<C> 
         )
     }
 
-    fn get_payee_locations(&self, budget_id: &str) -> Box<Future<Item = ::models::PayeeLocationsResponse, Error = Error>> {
+    fn get_payee_locations(&self, budget_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;
@@ -90,7 +90,7 @@ impl<C: hyper::client::Connect>PayeeLocationsApi for PayeeLocationsApiClient<C> 
         )
     }
 
-    fn get_payee_locations_by_payee(&self, budget_id: &str, payee_id: &str) -> Box<Future<Item = ::models::PayeeLocationsResponse, Error = Error>> {
+    fn get_payee_locations_by_payee(&self, budget_id: &str, payee_id: &str) -> Box<dyn (Future<Item = ::models::PayeeLocationsResponse, Error = Error>)> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let method = hyper::Method::Get;

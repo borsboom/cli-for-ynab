@@ -2,10 +2,10 @@ use prettytable::format::Alignment;
 use prettytable::{Cell, Row, Table};
 use ynab_api::models;
 
-use args::*;
-use output::*;
-use types::*;
-use ynab_state::*;
+use crate::args::*;
+use crate::output::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 pub fn list_budgets(state: &YnabState) -> Result<(), AnyError> {
     let response = state.run(&|c| c.budgets_api().get_budgets())?;
@@ -100,11 +100,11 @@ fn make_budget_settings_table(
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencyIsoCode.to_string()),
-        Cell::new(&curfmt.iso_code()),
+        Cell::new(curfmt.iso_code()),
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencyExampleFormat.to_string()),
-        Cell::new(&curfmt.example_format()),
+        Cell::new(curfmt.example_format()),
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencyDecimalDigits.to_string()),
@@ -120,11 +120,11 @@ fn make_budget_settings_table(
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencyGroupSeparator.to_string()),
-        Cell::new(&curfmt.group_separator()),
+        Cell::new(curfmt.group_separator()),
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencySymbol.to_string()),
-        Cell::new(&curfmt.currency_symbol()),
+        Cell::new(curfmt.currency_symbol()),
     ]));
     table.add_row(Row::new(vec![
         vfield_cell(&BudgetCol::CurrencyDisplaySymbol.to_string()),

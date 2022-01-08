@@ -2,11 +2,11 @@ use prettytable::format::Alignment;
 use prettytable::{Cell, Row, Table};
 use ynab_api::models;
 
-use args::*;
-use constants::*;
-use output::*;
-use types::*;
-use ynab_state::*;
+use crate::args::*;
+use crate::constants::*;
+use crate::output::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 pub fn list_categories(state: &YnabState) -> Result<(), AnyError> {
     // let include_hidden: bool = req_parse_value_of(state.matches, INCLUDE_HIDDEN_ARG);
@@ -55,7 +55,7 @@ pub fn get_category(state: &YnabState) -> Result<(), AnyError> {
     // @@@ CURRENTY API'S BY-MONTH SEEMS TO IGNORE THE MONTH AND ASSUME CURRENT
     let response = state.run(&|c| {
         c.categories_api()
-            .get_month_category_by_id(&state.global.budget_id, &month, &id)
+            .get_month_category_by_id(&state.global.budget_id, &month, id)
     })?;
     vtable_output(
         state,
@@ -70,14 +70,14 @@ pub fn update_category(state: &YnabState) -> Result<(), AnyError> {
     let month = req_month_value_of(state.matches, MONTH_ARG);
     let settings = state.get_budget_settings()?;
     let model = file_input(state)?.unwrap_or({
-        let budgeted = req_milliunits_value_of(&settings, &state.matches, SET_BUDGETED_ARG)?;
+        let budgeted = req_milliunits_value_of(&settings, state.matches, SET_BUDGETED_ARG)?;
         models::SaveMonthCategoryWrapper::new(models::SaveMonthCategory::new(budgeted))
     });
     let response = state.run(&|c| {
         c.categories_api().update_month_category(
             &state.global.budget_id,
             &month,
-            &id,
+            id,
             model.clone(), // @@@ NOT SURE WHY WE NEED TO CLONE HERE
         )
     })?;
@@ -110,21 +110,20 @@ pub fn category_cell(
         }
         CategoryCol::Note => Cell::new(&opt_ref_str(cat.note())),
         CategoryCol::Budgeted => Cell::new_align(
-            &milliunits_str(&settings, cat.budgeted()),
+            &milliunits_str(settings, cat.budgeted()),
             currency_alignment,
         ),
         CategoryCol::Activity => Cell::new_align(
-            &milliunits_str(&settings, cat.activity()),
+            &milliunits_str(settings, cat.activity()),
             currency_alignment,
         ),
-        CategoryCol::Balance => Cell::new_align(
-            &milliunits_str(&settings, cat.balance()),
-            currency_alignment,
-        ),
+        CategoryCol::Balance => {
+            Cell::new_align(&milliunits_str(settings, cat.balance()), currency_alignment)
+        }
         CategoryCol::GoalType => Cell::new(&opt_ref_str(cat.goal_type())),
         CategoryCol::GoalCreationMonth => Cell::new(&opt_month_str(cat.goal_creation_month())),
         CategoryCol::GoalTarget => Cell::new_align(
-            &milliunits_str(&settings, cat.goal_target()),
+            &milliunits_str(settings, cat.goal_target()),
             currency_alignment,
         ),
         CategoryCol::GoalTargetMonth => Cell::new(&opt_month_str(cat.goal_target_month())),
@@ -157,7 +156,7 @@ fn make_category_groups_table(
             table.add_row(Row::new(
                 columns
                     .iter()
-                    .map(|c| category_cell(&settings, Some(group), &cat, &c, Alignment::RIGHT))
+                    .map(|c| category_cell(&settings, Some(group), cat, c, Alignment::RIGHT))
                     .collect(),
             ));
         }
@@ -177,7 +176,7 @@ fn make_categories_table(
         table.add_row(Row::new(
             columns
                 .iter()
-                .map(|c| category_cell(&settings, None, &cat, &c, Alignment::RIGHT))
+                .map(|c| category_cell(&settings, None, cat, c, Alignment::RIGHT))
                 .collect(),
         ));
     }
@@ -191,7 +190,7 @@ fn make_category_table(state: &YnabState, category: &models::Category) -> Result
     for col in CATEGORY_NON_GROUP_COLS.iter() {
         table.add_row(Row::new(vec![
             vfield_cell(&col.to_string()),
-            category_cell(&settings, None, category, &col, Alignment::LEFT),
+            category_cell(&settings, None, category, col, Alignment::LEFT),
         ]));
     }
     Ok(table)

@@ -6,9 +6,9 @@ use std::io;
 use std::str::FromStr;
 use ynab_api::models;
 
-use constants::*;
-use types::*;
-use ynab_state::*;
+use crate::constants::*;
+use crate::types::*;
+use crate::ynab_state::*;
 
 // struct ArgsBuilder<'a> {
 //     phantom: std::marker::PhantomData<&'a ()>, //@@@ NOT SURE IF USING RIGHT
@@ -61,7 +61,7 @@ pub fn req_value_of<'a>(matches: &'a ArgMatches<'static>, name: &str) -> &'a str
     // Use of 'expect' is safe because clap has validated input
     matches
         .value_of(name)
-        .expect(&format!("Expected {} argument to exist", name))
+        .unwrap_or_else(|| panic!("Expected {} argument to exist", name))
 }
 
 pub fn req_parse_value_of<T: FromStr>(matches: &ArgMatches<'static>, name: &str) -> T
@@ -70,7 +70,7 @@ where
 {
     let val = req_value_of(matches, name);
     // Use of 'expect' is safe because clap has validated input
-    T::from_str(&val).expect(&format!("Expected {} argument to be valid: {}", name, val))
+    T::from_str(val).unwrap_or_else(|_| panic!("Expected {} argument to be valid: {}", name, val))
 }
 
 pub fn opt_parse_value_of<T: FromStr>(matches: &ArgMatches<'static>, name: &str) -> Option<T>
@@ -79,7 +79,8 @@ where
 {
     // Use of 'expect' is safe because clap has validated input
     matches.value_of(name).map(|val| {
-        T::from_str(&val).expect(&format!("Expected {} argument to be valid: {}", name, val))
+        T::from_str(val)
+            .unwrap_or_else(|_| panic!("Expected {} argument to be valid: {}", name, val))
     })
 }
 
@@ -115,7 +116,7 @@ fn parse_date(
     ];
     let mut last_err: Option<chrono::ParseError> = None;
     for f in fmts.iter() {
-        match NaiveDate::parse_from_str(&val, f) {
+        match NaiveDate::parse_from_str(val, f) {
             Ok(d) => {
                 return Ok(d);
             }
@@ -147,20 +148,20 @@ pub fn opt_milliunits_value_of(
     match matches.value_of(name) {
         None => Ok(None),
         Some(val) => parse_milliunits(settings, val)
-            .map(|d| Some(d))
+            .map(Some)
             .map_err(|e| Error::InvalidCurrencyAmountArg(name.to_string(), val.to_string(), e)),
     }
 }
 
 pub fn req_month_value_of(matches: &ArgMatches<'static>, name: &str) -> NaiveDate {
     let val = req_value_of(matches, name);
-    parse_month(val).expect(&format!("Expected valid month: {}", val))
+    parse_month(val).unwrap_or_else(|_| panic!("Expected valid month: {}", val))
 }
 
 pub fn opt_month_value_of(matches: &ArgMatches<'static>, name: &str) -> Option<NaiveDate> {
     matches
         .value_of(name)
-        .map(|val| parse_month(val).expect(&format!("Expected valid month: {}", val)))
+        .map(|val| parse_month(val).unwrap_or_else(|_| panic!("Expected valid month: {}", val)))
 }
 
 // Cannot be validated in command-line (since we need budget settings to parse), so this returns a Result instead of panicing on invalid.
@@ -172,7 +173,7 @@ pub fn opt_date_value_of(
     match matches.value_of(name) {
         None => Ok(None),
         Some(val) => parse_date(settings, val)
-            .map(|d| Some(d))
+            .map(Some)
             .map_err(|e| Error::InvalidDateArg(name.to_string(), val.to_string(), e)),
     }
 }
@@ -187,7 +188,7 @@ pub fn opt_flag_color_value_of(
         } else {
             Some(
                 models::FlagColor::from_str(val)
-                    .expect(&format!("Expected valid flag color: {}", val)),
+                    .unwrap_or_else(|_| panic!("Expected valid flag color: {}", val)),
             )
         }
     })
@@ -202,19 +203,23 @@ pub fn req_transaction_type_value_of(
         None
     } else {
         // Use of 'expect' is safe because clap has validated input
-        Some(models::TransactionType::from_str(&val).expect(&format!(
-            "Expected {} argument to be valid transaction type: {}",
-            name, val
-        )))
+        Some(models::TransactionType::from_str(val).unwrap_or_else(|_| {
+            panic!(
+                "Expected {} argument to be valid transaction type: {}",
+                name, val
+            )
+        }))
     }
 }
 
 pub fn opt_last_knowledge_of_server_value_of(matches: &ArgMatches<'static>) -> Option<i64> {
     matches.value_of(LAST_KNOWLEDGE_OF_SERVER_ARG).map(|v| {
-        v.parse().expect(&format!(
-            "Expected {} argument to be integer: {}",
-            LAST_KNOWLEDGE_OF_SERVER_ARG, v
-        ))
+        v.parse().unwrap_or_else(|_| {
+            panic!(
+                "Expected {} argument to be integer: {}",
+                LAST_KNOWLEDGE_OF_SERVER_ARG, v
+            )
+        })
     })
 }
 
@@ -461,7 +466,7 @@ impl GlobalOptions {
         ) -> String {
             // Use of 'expect' is safe because clap has validated input
             opt_value_of(super_matches, matches, name)
-                .expect(&format!("Expected {} argument to exists", name))
+                .unwrap_or_else(|| panic!("Expected {} argument to exists", name))
         }
         fn req_parse_value_of<T: FromStr>(
             super_matches: &ArgMatches<'static>,
@@ -473,8 +478,8 @@ impl GlobalOptions {
         {
             let val = req_value_of(super_matches, matches, name);
             // Use of 'expect' is safe because clap has validated input
-            T::from_str(&val).expect(&format!("{} argument is valid: {}", name, val))
-        };
+            T::from_str(&val).unwrap_or_else(|_| panic!("{} argument is valid: {}", name, val))
+        }
         let headers = req_parse_value_of(super_matches, matches, HEADERS_ARG);
         let table_borders = req_parse_value_of(super_matches, matches, BORDERS_ARG);
         let output_format = req_parse_value_of(super_matches, matches, OUTPUT_ARG);
@@ -971,7 +976,7 @@ where
 {
     if let Some(path) = state.matches.value_of(FILE_INPUT_ARG) {
         // @@@ ERROR MESSAGES HERE SHOULD INCLUDE THE FILENAME
-        let file: Box<io::Read> = if path == "-" {
+        let file: Box<dyn io::Read> = if path == "-" {
             Box::new(std::io::stdin())
         } else {
             Box::new(fs::File::open(path)?)
