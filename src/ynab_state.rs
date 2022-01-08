@@ -2,8 +2,8 @@ use std::cell::RefCell;
 use ynab_api::apis;
 use ynab_api::models;
 
-use args::*;
-use types::*;
+use crate::args::*;
+use crate::types::*;
 
 type YnabClient =
     apis::client::APIClient<::hyper_tls::HttpsConnector<hyper::client::HttpConnector>>;

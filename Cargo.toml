@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Emanuel Borsboom <emanuel@borsboom.io>"]
 description = "Command-line interface for YNAB."
 autobins = false
+edition = '2021'
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }

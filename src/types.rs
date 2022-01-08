@@ -1,7 +1,7 @@
 use std::error;
 use std::fmt;
 
-use constants::*;
+use crate::constants::*;
 
 #[derive(Debug)]
 pub enum Error {
