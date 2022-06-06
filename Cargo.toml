@@ -9,7 +9,7 @@ autobins = false
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "2.32.0", default-features = false, features = ["suggestions", "wrap_help"] }
 dotenv = "0.13.0"
-hyper = "0.11.6"
+hyper = "0.14.5"
 tokio-core = "0.1.17"
 futures = "0.1.16"
 hyper-tls = "0.1.4"
